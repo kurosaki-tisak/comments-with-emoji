@@ -1,57 +1,157 @@
-import React, { Component } from 'react';
-import { 
-    View, 
-    ScrollView,
-    RefreshControl
-} from 'react-native';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import {
+  View,
+  Text,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  RefreshControl,
+  FlatList
+} from "react-native";
+import moment from "moment";
+import InputBox from "./common/InputBox";
 
-import InputBox from './common/InputBox';
+import { getCommentList, getArticleById } from "../actions";
+import { colors } from "../theme";
 
 class CommentListScreen extends Component {
+  static navigationOptions = {
+    header: "Comment"
+  };
 
-    constructor(props) {
-        super(props)
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            comments: [],
-            refreshing: true,
-        };
-    }
+    this.state = {
+      comments: [],
+      refreshing: true
+    };
+  }
 
-    onRefresh = () => { }
+  onRefresh = () => {};
 
-    onSubmitComment = async (comment) => {
+  onSubmitComment = async comment => {};
 
-    }
+  render() {
+    const name = "Kittisak";
+    const title = "Title of this article";
+    const content = "Test test";
+    const created = "2018-04-19T12:59-0500";
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <ScrollView
-                    ref={(scrollView) => { this._scrollView = scrollView; }}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.refreshing}
-                        />
-                    }
-                >
-
-                </ScrollView>
-                <InputBox
-                    user={{ name: 'Kittisak', avatar: ''}}
-                    onSubmit={this.onSubmitComment}
-                />
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <ScrollView>
+            <View style={styles.headerContainer}>
+              <View style={styles.avatarContainer}>
+                <View style={styles.headerAvatarContainer}>
+                  <Image
+                    resizeMode="contain"
+                    style={styles.headerAvatar}
+                    source={{ uri: "https://loremflickr.com/320/320/women" }}
+                  />
+                </View>
+                <View style={styles.articleContainer}>
+                  <Text style={[styles.text, styles.name]}>{name}</Text>
+                  <Text style={[styles.article, styles.name]}>{title}</Text>
+                </View>
+              </View>
+              <View style={styles.contentContainer}>
+                <Text>{content}</Text>
+                <Text style={[styles.text, styles.created]}>
+                  {moment(created).fromNow()}
+                </Text>
+              </View>
             </View>
-        )
-    }
+            <FlatList data={[]} />
+          </ScrollView>
+
+          <InputBox
+            user={{
+              name: "Kittisak",
+              avatar: `https://loremflickr.com/320/320/women`
+            }}
+            onSubmit={this.onSubmitComment}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 }
 
-export default CommentListScreen;
+const mapDispatchToProps = {
+  dispatchGetArticleById: articleID => getArticleById({ articleID }),
+  dispatchGetCommentList: articleID => getCommentList({ articleID })
+};
+
+const mapStateToProps = state => {
+  const { article } = state.article;
+  const { loading, comments, comment, error } = state.comment;
+  return { loading, article, comments, comment, error };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CommentListScreen);
 
 const styles = {
-    container: {
-        flex: 1,
-        backgroundColor: '#FFF',
-        paddingTop: 20,
-      }
-}
+  container: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    paddingTop: 20
+  },
+  headerContainer: {
+    flex: 1,
+    flexDirection: "column",
+    borderBottomWidth: 1,
+    borderColor: "#EEE"
+  },
+  avatarContainer: {
+    flexDirection: "row",
+    alignItems: "stretch",
+    paddingLeft: 15,
+    paddingBottom: 15
+  },
+  headerAvatarContainer: {
+    alignItems: "center",
+    marginLeft: 5,
+    marginRight: 5,
+    paddingTop: 10,
+    width: 40
+  },
+  headerAvatar: {
+    borderWidth: 1,
+    borderColor: "#EEE",
+    borderRadius: 20,
+    width: 40,
+    height: 40
+  },
+  articleContainer: {
+    flex: 1,
+    padding: 5
+  },
+  article: {
+    color: colors.primary,
+    fontWeight: "bold",
+    paddingTop: 5,
+    paddingBottom: 5
+  },
+  contentContainer: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 10,
+  },
+  text: {
+    color: "#000",
+    fontSize: 15
+  },
+  name: {
+    fontWeight: "bold"
+  },
+  created: {
+    color: "#BBB",
+    paddingTop: 5,
+  }
+};

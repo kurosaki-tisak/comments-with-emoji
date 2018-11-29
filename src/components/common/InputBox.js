@@ -1,105 +1,128 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types';
-import { 
-    TextInput,
-    Text,
-    View,
-    TouchableOpacity,
-    KeyboardAvoidingView
-} from 'react-native';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import {
+  TextInput,
+  Text,
+  Image,
+  View,
+  TouchableOpacity,
+  KeyboardAvoidingView
+} from "react-native";
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
+import { colors } from '../../theme';
 
 export default class InputBox extends Component {
+  static propTypes = {
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      avatar: PropTypes.string.isRequired
+    }).isRequired,
+    onSubmit: PropTypes.func.isRequired
+  };
 
-    static propTypes = {
-        user: PropTypes.shape({
-            name: PropTypes.string.isRequired,
-            avatar: PropTypes.string.isRequired,
-        }).isRequired,
-        onSubmit: PropTypes.func.isRequired,
-    }
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            userName: this.props.user.name,
-            text: undefined, // user's input
-        };
-    }
-
-    // Update state when input changes
-    onChangeText = (text) => this.setState({ text });
-
-    // Handle return press on the keyboard
-    onSubmitEditing = ({ nativeEvent: { text }} ) => this.setState({ text });
-
-    // Call this.props.onSubmit handler and press the comment
-    submit = () => {
-        const { text } = this.state;
-        if (text) {
-            this.setState({ text: undefined }, () => this.props.onSubmit(text));
-        } else {
-            alert('Please enter your comment first');
-        }
+    this.state = {
+      userName: this.props.user.name,
+      text: undefined // user's input
     };
+  }
 
-    render() {
-        return (
-            <KeyboardAvoidingView
-                behavior='position'
-            >
-            <View style={styles.container}>
-                <TextInput
-                    placeholder={`Comment as ${this.state.userName}...`}
-                    keyboardType="twitter"
-                    autoFocus={true}
-                    style={styles.input}
-                    value={this.state.text}
-                    onChangeText={this.onChangeText}
-                    onSubmitEditing={this.onSubmitEditing}
-                />
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={this.submit}
-                >
-                    <Text style={[styles.text, !this.state.text ? styles.inactive : []]}>
-                        Post
-                    </Text>
-                </TouchableOpacity>
-            </View>
-            </KeyboardAvoidingView>
-        )
+  // Update state when input changes
+  onChangeText = text => this.setState({ text });
+
+  // Handle return press on the keyboard
+  onSubmitEditing = ({ nativeEvent: { text } }) => this.setState({ text });
+
+  // Call this.props.onSubmit handler and press the comment
+  submit = () => {
+    const { text } = this.state;
+    if (text) {
+      this.setState({ text: undefined }, () => this.props.onSubmit(text));
+    } else {
+      alert("Please enter your comment first");
     }
+  };
+
+  render() {
+    const { avatar } = this.props.user;
+
+    return (
+      <KeyboardAvoidingView behavior="position">
+        <View style={styles.container}>
+          <View style={styles.avatarContainer}>
+            <Image
+              resizeMode="contain"
+              style={styles.avatar}
+              source={{ uri: avatar }}
+            />
+          </View>
+          <TextInput
+            placeholder={`Comment as ${this.state.userName}...`}
+            keyboardType="twitter"
+            autoFocus={true}
+            style={styles.input}
+            value={this.state.text}
+            onChangeText={this.onChangeText}
+            onSubmitEditing={this.onSubmitEditing}
+          />
+          <Icon name="smile" size={20} color={colors.primary}/>
+          <TouchableOpacity style={styles.button} onPress={this.submit}>
+            <Text
+              style={[styles.text, !this.state.text ? styles.inactive : []]}
+            >
+              Post
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
 }
 
 const styles = {
-    container: {
-        backgroundColor: '#FFF',
-        flexDirection: 'row',
-        borderTopWidth: 1,
-        borderColor: '#EEE',
-        alignItems: 'center',
-        paddingLeft: 15,
-      },
-      input: {
-        flex: 1,
-        height: 40,
-        fontSize: 15,
-      },
-      button: {
-        height: 40,
-        paddingHorizontal: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      inactive: {
-        color: '#CCC',
-      },
-      text: {
-        color: '#3F51B5',
-        fontWeight: 'bold',
-        fontFamily: 'Avenir',
-        textAlign: 'center',
-        fontSize: 15,
-      },
-}
+  container: {
+    backgroundColor: "#FFF",
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderColor: "#EEE",
+    alignItems: "center",
+    paddingLeft: 15
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    fontSize: 15
+  },
+  button: {
+    height: 40,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  inactive: {
+    color: "#CCC"
+  },
+  text: {
+    color: colors.primary,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 15
+  },
+  avatarContainer: {
+    alignItems: "center",
+    marginLeft: 5,
+    marginRight: 5,
+    paddingTop: 10,
+    width: 40
+  },
+  avatar: {
+    borderWidth: 1,
+    borderColor: "#EEE",
+    borderRadius: 20,
+    width: 40,
+    height: 40
+  },
+};
