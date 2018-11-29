@@ -30,8 +30,8 @@ export const getCommentList = ({ articleID }) => {
         dispatch({ type: GET_COMMENT });
 
         try {
-            const result = await axios.get(`${API}/comments`);
-            dispatch(getCommentSuccess(result));
+            const { data } = await axios.get(`${API}/comments`);
+            dispatch(getCommentSuccess(data));
         } catch (error) {
             dispatch(getCommentFailure(error));
         }

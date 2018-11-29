@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import moment from "moment";
 import InputBox from "./common/InputBox";
+import Comment from './common/Comment';
 
 import { getCommentList, getArticleById } from "../actions";
 import { colors } from "../theme";
@@ -29,9 +30,47 @@ class CommentListScreen extends Component {
     };
   }
 
-  onRefresh = () => {};
+  async componentWillMount() {
+    this.fetchComments();
 
-  onSubmitComment = async comment => {};
+    this.receiveComments(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.receiveComments(nextProps);
+  }
+
+  receiveComments({ comments }) {
+    this.setState({
+      comments: comments,
+      refreshing: false
+    })
+
+    console.log(comments)
+  }
+
+  onRefresh = () => { this.fetchComments() };
+
+  fetchComments = () => {
+    this.setState({ refreshing: true });
+
+    this.props.dispatchGetCommentList('1');
+  }
+
+  onSubmitComment = async comment => { };
+
+  renderCommentItem = (obj) => {
+    const comment = {
+      content: obj.body,
+      created: obj.postAt,
+      user: {
+        name: obj.user.name,
+        avatar: obj.user.avatar
+      }
+    }
+
+    return <Comment comment={comment} key={obj.id} />
+  }
 
   render() {
     const name = "Kittisak";
@@ -42,7 +81,15 @@ class CommentListScreen extends Component {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
-          <ScrollView>
+          <ScrollView
+            ref={(scrollView) => { this._scrollView = scrollView; }}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.onRefresh}
+              />
+            }
+          >
             <View style={styles.headerContainer}>
               <View style={styles.avatarContainer}>
                 <View style={styles.headerAvatarContainer}>
@@ -64,7 +111,11 @@ class CommentListScreen extends Component {
                 </Text>
               </View>
             </View>
-            <FlatList data={[]} />
+            <FlatList
+              data={this.state.comments}
+              renderItem={({ item }) => this.renderCommentItem(item)}
+              keyExtractor={(item, index) => item.id}
+            />
           </ScrollView>
 
           <InputBox
