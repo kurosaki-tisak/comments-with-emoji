@@ -8,7 +8,7 @@ import {
 
 import moment from 'moment';
 
-export default class CommentItem extends PureComponent {
+export default class Comment extends PureComponent {
 
     static propTypes = {
         // Comment Object 

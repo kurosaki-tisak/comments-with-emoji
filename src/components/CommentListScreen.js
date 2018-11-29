@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
-
-import Comment from './common/Comment';
+import { View, Text } from 'react-native';
 
 class CommentListScreen extends Component {
 
     render() {
-        return <View></View>
+        return (<View> <Text>Test</Text>
+        </View>)
     }
 }
 
