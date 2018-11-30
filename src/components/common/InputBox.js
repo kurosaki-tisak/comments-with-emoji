@@ -5,8 +5,7 @@ import {
   Text,
   Image,
   View,
-  TouchableOpacity,
-  KeyboardAvoidingView
+  TouchableOpacity
 } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -50,7 +49,6 @@ export default class InputBox extends Component {
     const { avatar } = this.props.user;
 
     return (
-      <KeyboardAvoidingView behavior="position">
         <View style={styles.container}>
           <View style={styles.avatarContainer}>
             <Image
@@ -77,7 +75,6 @@ export default class InputBox extends Component {
             </Text>
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
     );
   }
 }

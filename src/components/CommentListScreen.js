@@ -7,11 +7,12 @@ import {
   SafeAreaView,
   ScrollView,
   RefreshControl,
-  FlatList
+  FlatList,
+  KeyboardAvoidingView
 } from "react-native";
 import moment from "moment";
 import InputBox from "./common/InputBox";
-import Comment from './common/Comment';
+import Comment from "./common/Comment";
 
 import { getCommentList, getArticleById } from "../actions";
 import { colors } from "../theme";
@@ -44,22 +45,24 @@ class CommentListScreen extends Component {
     this.setState({
       comments: comments,
       refreshing: false
-    })
+    });
 
-    console.log(comments)
+    console.log(comments);
   }
 
-  onRefresh = () => { this.fetchComments() };
+  onRefresh = () => {
+    this.fetchComments();
+  };
 
   fetchComments = () => {
     this.setState({ refreshing: true });
 
-    this.props.dispatchGetCommentList('1');
-  }
+    this.props.dispatchGetCommentList("1");
+  };
 
-  onSubmitComment = async comment => { };
+  onSubmitComment = async comment => {};
 
-  renderCommentItem = (obj) => {
+  renderCommentItem = obj => {
     const comment = {
       content: obj.body,
       created: obj.postAt,
@@ -67,10 +70,10 @@ class CommentListScreen extends Component {
         name: obj.user.name,
         avatar: obj.user.avatar
       }
-    }
+    };
 
-    return <Comment comment={comment} key={obj.id} />
-  }
+    return <Comment comment={comment} key={obj.id} />;
+  };
 
   render() {
     const name = "Kittisak";
@@ -80,9 +83,11 @@ class CommentListScreen extends Component {
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
           <ScrollView
-            ref={(scrollView) => { this._scrollView = scrollView; }}
+            ref={scrollView => {
+              this._scrollView = scrollView;
+            }}
             refreshControl={
               <RefreshControl
                 refreshing={this.state.refreshing}
@@ -125,7 +130,7 @@ class CommentListScreen extends Component {
             }}
             onSubmit={this.onSubmitComment}
           />
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
@@ -192,7 +197,7 @@ const styles = {
   contentContainer: {
     paddingLeft: 20,
     paddingRight: 20,
-    paddingBottom: 10,
+    paddingBottom: 10
   },
   text: {
     color: "#000",
@@ -203,6 +208,6 @@ const styles = {
   },
   created: {
     color: "#BBB",
-    paddingTop: 5,
+    paddingTop: 5
   }
 };
