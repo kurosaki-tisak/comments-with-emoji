@@ -14,7 +14,7 @@ import moment from "moment";
 import InputBox from "./common/InputBox";
 import Comment from "./common/Comment";
 
-import { getCommentList, getArticleById } from "../actions";
+import { getCommentList, postComment, getArticleById } from "../actions";
 import { colors } from "../theme";
 
 class CommentListScreen extends Component {
@@ -26,6 +26,13 @@ class CommentListScreen extends Component {
     super(props);
 
     this.state = {
+      article: {},
+      user: {
+        id: 1,
+        name: "Kittisak",
+        avatar: `https://loremflickr.com/320/320/women`
+      },
+      comment: {},
       comments: [],
       refreshing: true
     };
@@ -33,21 +40,28 @@ class CommentListScreen extends Component {
 
   async componentWillMount() {
     this.fetchComments();
-
-    this.receiveComments(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     this.receiveComments(nextProps);
   }
 
-  receiveComments({ comments }) {
-    this.setState({
-      comments: comments,
-      refreshing: false
-    });
+  receiveComments({ comment, comments }) {
+    if (comment !== this.props.comment) {
+      this.setState({
+        comment: comment,
+        comments: [comment, ...comments],
+        refreshing: false
+      });
+    } else {
+      this.setState({
+        comment: comment,
+        comments: comments,
+        refreshing: false
+      });
+    }
 
-    console.log(comments);
+    console.log(comment);
   }
 
   onRefresh = () => {
@@ -60,7 +74,12 @@ class CommentListScreen extends Component {
     this.props.dispatchGetCommentList("1");
   };
 
-  onSubmitComment = async comment => {};
+  onSubmitComment = comment => {
+    const now = moment([]);
+    const postAt = `${moment(now).format(`YYYY-MM-DDTHH:mm:ss`)}`;
+
+    this.props.dispatchPostComment("1", comment, postAt, this.state.user);
+  };
 
   renderCommentItem = obj => {
     const comment = {
@@ -119,17 +138,11 @@ class CommentListScreen extends Component {
             <FlatList
               data={this.state.comments}
               renderItem={({ item }) => this.renderCommentItem(item)}
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item, index) => `${item.id}`}
             />
           </ScrollView>
 
-          <InputBox
-            user={{
-              name: "Kittisak",
-              avatar: `https://loremflickr.com/320/320/women`
-            }}
-            onSubmit={this.onSubmitComment}
-          />
+          <InputBox user={this.state.user} onSubmit={this.onSubmitComment} />
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
@@ -138,7 +151,9 @@ class CommentListScreen extends Component {
 
 const mapDispatchToProps = {
   dispatchGetArticleById: articleID => getArticleById({ articleID }),
-  dispatchGetCommentList: articleID => getCommentList({ articleID })
+  dispatchGetCommentList: articleID => getCommentList({ articleID }),
+  dispatchPostComment: (articleID, comment, createAt, user) =>
+    postComment({ articleID, comment, createAt, user })
 };
 
 const mapStateToProps = state => {

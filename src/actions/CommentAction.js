@@ -52,15 +52,25 @@ const postCommentFailure = (err) => {
     }
 }
 
-export const postComment = ({ articleID, comments, user }) => {
+export const postComment = ({ articleID, comment, createAt, user }) => {
     return async (dispatch) => {
         dispatch({ type: POST_COMMENT });
 
         try {
-            const result = await axios.post(`${API}/comments`, {
-                articleID, comments, user
+            const { data } = await axios.post(`${API}/comments`, {
+                id: 3,
+                body: comment,
+                postId: articleID,
+                postAt: createAt,
+                user: user
+            }, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                  }
             });
-            dispatch(postCommentSuccess(result));
+            dispatch(postCommentSuccess(data));
         } catch (error) {
             dispatch(postCommentFailure(error));
         }
