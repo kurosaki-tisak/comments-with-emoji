@@ -71,7 +71,7 @@ export default class InputBox extends Component {
         <TextInput
           placeholder={`Comment as ${this.state.userName}...`}
           keyboardType="twitter"
-          autoFocus={true}
+          autoFocus={false}
           style={styles.input}
           value={this.state.text}
           onChangeText={this.onChangeText}
