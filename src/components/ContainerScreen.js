@@ -1,8 +1,8 @@
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import ArticleScreen from './ArticleScreen';
 import CommentListScreen from './CommentListScreen';
 
-export default ContainerScreen = createStackNavigator(
+const ContainerScreen = createStackNavigator(
     {
         Article: ArticleScreen,
         Comment: CommentListScreen
@@ -11,3 +11,5 @@ export default ContainerScreen = createStackNavigator(
         initialRouteName: 'Article'
     }
 );
+
+export default createAppContainer(ContainerScreen);
