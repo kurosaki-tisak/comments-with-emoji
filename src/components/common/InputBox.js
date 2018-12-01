@@ -1,15 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import {
-  TextInput,
-  Text,
-  Image,
-  View,
-  TouchableOpacity
-} from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { TextInput, Text, Image, View, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
-import { colors } from '../../theme';
+import { colors } from "../../theme";
 
 export default class InputBox extends Component {
   static propTypes = {
@@ -17,8 +11,7 @@ export default class InputBox extends Component {
       name: PropTypes.string.isRequired,
       avatar: PropTypes.string.isRequired
     }).isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    onEmojiPress: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -35,7 +28,10 @@ export default class InputBox extends Component {
   onChangeText = text => this.setState({ text });
 
   // Handle return press on the keyboard
-  onSubmitEditing = ({ nativeEvent: { text } }) => this.setState({ text });
+  onSubmitEditing = ({ nativeEvent: { text } }) => {
+    this.setState({ text });
+    KeyboardUtils.dismiss();
+  };
 
   // Call this.props.onSubmit handler and press the comment
   submit = () => {
@@ -46,16 +42,6 @@ export default class InputBox extends Component {
       alert("Please enter your comment first");
     }
   };
-
-  emojiClick = () => {
-    const { isEmojiPressed } = this.state;
-    if (isEmojiPressed) {
-      this.setState({ isEmojiPressed: false }, () => this.props.onEmojiPress(isEmojiPressed));
-    } else {
-      this.setState({ isEmojiPressed: true }, () => this.props.onEmojiPress(isEmojiPressed));  
-    }
-  }
-
   render() {
     const { avatar } = this.props.user;
 
@@ -77,13 +63,10 @@ export default class InputBox extends Component {
           onChangeText={this.onChangeText}
           onSubmitEditing={this.onSubmitEditing}
         />
-        <Icon name="smile" size={20} color={!this.state.isEmojiPressed ? `#CCC` : colors.primary} onPress={this.emojiClick} />
         <TouchableOpacity style={styles.button} onPress={this.submit}>
-          <Text
-            style={[styles.text, !this.state.text ? styles.inactive : []]}
-          >
+          <Text style={[styles.text, !this.state.text ? styles.inactive : []]}>
             Post
-            </Text>
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -132,5 +115,5 @@ const styles = {
     borderRadius: 20,
     width: 40,
     height: 40
-  },
+  }
 };

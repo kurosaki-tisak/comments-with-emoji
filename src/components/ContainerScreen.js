@@ -1,4 +1,4 @@
-import { createStackNavigator, createNavigationContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import ArticleScreen from './ArticleScreen';
 import CommentListScreen from './CommentListScreen';
 
@@ -12,4 +12,4 @@ const ContainerScreen = createStackNavigator(
     }
 );
 
-export default createNavigationContainer(ContainerScreen);
+export default createAppContainer(ContainerScreen);

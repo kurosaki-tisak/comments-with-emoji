@@ -1,53 +1,33 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
+import { Header } from "react-navigation";
 import { connect } from "react-redux";
 import {
   View,
-  Text,
   Image,
+  Text,
   SafeAreaView,
   ScrollView,
   RefreshControl,
   FlatList,
   KeyboardAvoidingView
 } from "react-native";
+import { WebView } from 'react-native-webview';
 import moment from "moment";
 import InputBox from "./common/InputBox";
 import Comment from "./common/Comment";
 
-import { getCommentList, postComment, getArticleById } from "../actions";
+import { getCommentList, postComment } from "../actions";
 import { colors } from "../theme";
 
 class CommentListScreen extends Component {
-
-  static propTypes = {
-    article: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      title: PropTypes.string,
-      content: PropTypes.string,
-      postAt: PropTypes.string.isRequired,
-      user: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        avatar: PropTypes.string.isRequired
-      }).isRequired
-    }).isRequired
-  };
-
   static navigationOptions = {
-    header: "Comment"
+    title: "Comment"
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      article: {},
-      user: {
-        id: 1,
-        name: "Kittisak",
-        avatar: `https://loremflickr.com/320/320/women`
-      },
       comment: {},
       comments: [],
       refreshing: true
@@ -76,8 +56,6 @@ class CommentListScreen extends Component {
         refreshing: false
       });
     }
-
-    console.log(comment);
   }
 
   onRefresh = () => {
@@ -90,15 +68,11 @@ class CommentListScreen extends Component {
     this.props.dispatchGetCommentList("1");
   };
 
-  onSubmitComment = comment => {
+  onSubmitComment = ({ article, comment }) => {
     const now = moment([]);
     const postAt = `${moment(now).format(`YYYY-MM-DDTHH:mm:ss`)}`;
 
-    this.props.dispatchPostComment("1", comment, postAt, this.state.user);
-  };
-
-  onEmojiPressed = isEmojiPressed => {
-
+    this.props.dispatchPostComment("1", comment, postAt, article.user);
   };
 
   renderCommentItem = obj => {
@@ -115,14 +89,18 @@ class CommentListScreen extends Component {
   };
 
   render() {
-    const name = "Kittisak";
-    const title = "Title of this article";
-    const content = "Test test";
-    const created = "2018-04-19T12:59-0500";
+    const { navigation } = this.props;
+    const article = navigation.getParam("article", {});
+    const { title, content, postAt, user } = article;
+    const { name, avatar } = user;
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <KeyboardAvoidingView
+          style={styles.container}
+          keyboardVerticalOffset={Header.HEIGHT + 40}
+          behavior="padding"
+        >
           <ScrollView
             ref={scrollView => {
               this._scrollView = scrollView;
@@ -140,7 +118,7 @@ class CommentListScreen extends Component {
                   <Image
                     resizeMode="contain"
                     style={styles.headerAvatar}
-                    source={{ uri: "https://loremflickr.com/320/320/women" }}
+                    source={{ uri: avatar }}
                   />
                 </View>
                 <View style={styles.articleContainer}>
@@ -149,9 +127,12 @@ class CommentListScreen extends Component {
                 </View>
               </View>
               <View style={styles.contentContainer}>
-                <Text>{content}</Text>
+                <WebView
+                  originWhitelist={["*"]}
+                  source={{ html: content }}
+                />
                 <Text style={[styles.text, styles.created]}>
-                  {moment(created).fromNow()}
+                  {moment(postAt).fromNow()}
                 </Text>
               </View>
             </View>
@@ -163,10 +144,9 @@ class CommentListScreen extends Component {
           </ScrollView>
 
           <InputBox
-            user={this.state.user}
-            onSubmit={this.onSubmitComment}
-            onEmojiPress={this.onEmojiPressed} />
-
+            user={user}
+            onSubmit={comment => this.onSubmitComment({ article, comment })}
+          />
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
@@ -174,16 +154,14 @@ class CommentListScreen extends Component {
 }
 
 const mapDispatchToProps = {
-  dispatchGetArticleById: articleID => getArticleById({ articleID }),
   dispatchGetCommentList: articleID => getCommentList({ articleID }),
   dispatchPostComment: (articleID, comment, createAt, user) =>
     postComment({ articleID, comment, createAt, user })
 };
 
 const mapStateToProps = state => {
-  const { article } = state.article;
   const { loading, comments, comment, error } = state.comment;
-  return { loading, article, comments, comment, error };
+  return { loading, comments, comment, error };
 };
 
 export default connect(
