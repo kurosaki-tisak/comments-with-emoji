@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
   View,
@@ -18,6 +19,21 @@ import { getCommentList, postComment, getArticleById } from "../actions";
 import { colors } from "../theme";
 
 class CommentListScreen extends Component {
+
+  static propTypes = {
+    article: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      title: PropTypes.string,
+      content: PropTypes.string,
+      postAt: PropTypes.string.isRequired,
+      user: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        avatar: PropTypes.string.isRequired
+      }).isRequired
+    }).isRequired
+  };
+
   static navigationOptions = {
     header: "Comment"
   };
@@ -81,6 +97,10 @@ class CommentListScreen extends Component {
     this.props.dispatchPostComment("1", comment, postAt, this.state.user);
   };
 
+  onEmojiPressed = isEmojiPressed => {
+
+  };
+
   renderCommentItem = obj => {
     const comment = {
       content: obj.body,
@@ -142,7 +162,11 @@ class CommentListScreen extends Component {
             />
           </ScrollView>
 
-          <InputBox user={this.state.user} onSubmit={this.onSubmitComment} />
+          <InputBox
+            user={this.state.user}
+            onSubmit={this.onSubmitComment}
+            onEmojiPress={this.onEmojiPressed} />
+
         </KeyboardAvoidingView>
       </SafeAreaView>
     );

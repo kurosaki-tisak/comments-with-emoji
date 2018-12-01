@@ -17,7 +17,8 @@ export default class InputBox extends Component {
       name: PropTypes.string.isRequired,
       avatar: PropTypes.string.isRequired
     }).isRequired,
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    onEmojiPress: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -25,7 +26,8 @@ export default class InputBox extends Component {
 
     this.state = {
       userName: this.props.user.name,
-      text: undefined // user's input
+      text: undefined, // user's input
+      isEmojiPressed: false
     };
   }
 
@@ -45,36 +47,45 @@ export default class InputBox extends Component {
     }
   };
 
+  emojiClick = () => {
+    const { isEmojiPressed } = this.state;
+    if (isEmojiPressed) {
+      this.setState({ isEmojiPressed: false }, () => this.props.onEmojiPress(isEmojiPressed));
+    } else {
+      this.setState({ isEmojiPressed: true }, () => this.props.onEmojiPress(isEmojiPressed));  
+    }
+  }
+
   render() {
     const { avatar } = this.props.user;
 
     return (
-        <View style={styles.container}>
-          <View style={styles.avatarContainer}>
-            <Image
-              resizeMode="contain"
-              style={styles.avatar}
-              source={{ uri: avatar }}
-            />
-          </View>
-          <TextInput
-            placeholder={`Comment as ${this.state.userName}...`}
-            keyboardType="twitter"
-            autoFocus={true}
-            style={styles.input}
-            value={this.state.text}
-            onChangeText={this.onChangeText}
-            onSubmitEditing={this.onSubmitEditing}
+      <View style={styles.container}>
+        <View style={styles.avatarContainer}>
+          <Image
+            resizeMode="contain"
+            style={styles.avatar}
+            source={{ uri: avatar }}
           />
-          <Icon name="smile" size={20} color={colors.primary}/>
-          <TouchableOpacity style={styles.button} onPress={this.submit}>
-            <Text
-              style={[styles.text, !this.state.text ? styles.inactive : []]}
-            >
-              Post
-            </Text>
-          </TouchableOpacity>
         </View>
+        <TextInput
+          placeholder={`Comment as ${this.state.userName}...`}
+          keyboardType="twitter"
+          autoFocus={true}
+          style={styles.input}
+          value={this.state.text}
+          onChangeText={this.onChangeText}
+          onSubmitEditing={this.onSubmitEditing}
+        />
+        <Icon name="smile" size={20} color={!this.state.isEmojiPressed ? `#CCC` : colors.primary} onPress={this.emojiClick} />
+        <TouchableOpacity style={styles.button} onPress={this.submit}>
+          <Text
+            style={[styles.text, !this.state.text ? styles.inactive : []]}
+          >
+            Post
+            </Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }

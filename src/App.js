@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import CommentListScreen from './components/CommentListScreen';
+import ContainerScreen from './components/ContainerScreen';
 
 class App extends Component {
 
     render() {
-        return <CommentListScreen/>
+        return <ContainerScreen/>
     }
 }
 
