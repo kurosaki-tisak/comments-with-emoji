@@ -19,12 +19,12 @@ class ArticleScreen extends Component {
       article: {
         id: 1,
         title: "Title of this article",
-        content: '<h1>Hello world</h1>',
-        postAt: "2018-04-19T12:59-0500",
+        content: '<h1>This is title</h1><p>Throw your entire HTML here</p>',
+        postAt: "2018-11-01T12:59-0500",
         user: {
           id: 1,
           name: "Kittisak",
-          avatar: "https://loremflickr.com/320/320/women"
+          avatar: "https://scontent.fbkk12-2.fna.fbcdn.net/v/t1.0-9/46809992_10216581688868586_2607384708786421760_o.jpg?_nc_cat=105&_nc_ht=scontent.fbkk12-2.fna&oh=8f51b1006850b9a23338e443fd7e074e&oe=5C660299"
         }
       }
     });

@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { TextInput, Text, Image, View, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome5";
+import { 
+  TextInput, 
+  Text, 
+  Image, 
+  View, 
+  TouchableOpacity,
+  Keyboard
+} from "react-native";
 
 import { colors } from "../../theme";
 
@@ -30,7 +36,6 @@ export default class InputBox extends Component {
   // Handle return press on the keyboard
   onSubmitEditing = ({ nativeEvent: { text } }) => {
     this.setState({ text });
-    KeyboardUtils.dismiss();
   };
 
   // Call this.props.onSubmit handler and press the comment
@@ -38,6 +43,7 @@ export default class InputBox extends Component {
     const { text } = this.state;
     if (text) {
       this.setState({ text: undefined }, () => this.props.onSubmit(text));
+      Keyboard.dismiss();
     } else {
       alert("Please enter your comment first");
     }
@@ -54,7 +60,7 @@ export default class InputBox extends Component {
             source={{ uri: avatar }}
           />
         </View>
-        <TextInput
+        <TextInput         
           placeholder={`Comment as ${this.state.userName}...`}
           keyboardType="twitter"
           autoFocus={false}

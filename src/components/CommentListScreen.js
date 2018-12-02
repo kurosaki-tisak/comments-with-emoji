@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Header } from "react-navigation";
 import { connect } from "react-redux";
 import {
   View,
@@ -9,12 +8,15 @@ import {
   ScrollView,
   RefreshControl,
   FlatList,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  TouchableOpacity
 } from "react-native";
-import { WebView } from 'react-native-webview';
+import Toast from "react-native-easy-toast";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import moment from "moment";
 import InputBox from "./common/InputBox";
 import Comment from "./common/Comment";
+import CustomWebView from "./common/CustomWebView";
 
 import { getCommentList, postComment } from "../actions";
 import { colors } from "../theme";
@@ -44,14 +46,16 @@ class CommentListScreen extends Component {
 
   receiveComments({ comment, comments }) {
     if (comment !== this.props.comment) {
-      this.setState({
+      this.setState(prevState => ({
         comment: comment,
-        comments: [comment, ...comments],
+        comments: [...prevState.comments, comment],
         refreshing: false
-      });
+      }));
+
+      this.refs.toast.show('Note: the resource will not be really created on the fake server', 1000);
+
     } else {
       this.setState({
-        comment: comment,
         comments: comments,
         refreshing: false
       });
@@ -75,6 +79,10 @@ class CommentListScreen extends Component {
     this.props.dispatchPostComment("1", comment, postAt, article.user);
   };
 
+  onBackToArticle = () => {
+    this.props.navigation.navigate("Article")
+  }
+
   renderCommentItem = obj => {
     const comment = {
       content: obj.body,
@@ -94,14 +102,26 @@ class CommentListScreen extends Component {
     const { title, content, postAt, user } = article;
     const { name, avatar } = user;
 
+    const customStyle = "<style>* {max-width: 100%;} body {font-family: -apple-system;} h1 {font-size: 15px;} p {font-size: 12px;} </style>";
+
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           style={styles.container}
-          keyboardVerticalOffset={Header.HEIGHT + 40}
+          keyboardVerticalOffset={10}
           behavior="padding"
         >
+          <View style={styles.headerBar}>
+            <TouchableOpacity
+              style={{ flexDirection: 'row' }}
+              onPress={this.onBackToArticle}
+            >
+              <Icon name="chevron-left" size={20} />
+              <Text style={{ paddingLeft: 10, fontSize: 15 }}>Comment</Text>
+            </TouchableOpacity>
+          </View>
           <ScrollView
+            style={{ paddingTop: 10 }}
             ref={scrollView => {
               this._scrollView = scrollView;
             }}
@@ -127,9 +147,9 @@ class CommentListScreen extends Component {
                 </View>
               </View>
               <View style={styles.contentContainer}>
-                <WebView
-                  originWhitelist={["*"]}
-                  source={{ html: content }}
+                <CustomWebView
+                  originWhitelist={['*']}
+                  source={{ html: customStyle + content }}
                 />
                 <Text style={[styles.text, styles.created]}>
                   {moment(postAt).fromNow()}
@@ -142,7 +162,7 @@ class CommentListScreen extends Component {
               keyExtractor={(item, index) => `${item.id}`}
             />
           </ScrollView>
-
+          <Toast ref="toast" position='bottom' positionValue={400} />
           <InputBox
             user={user}
             onSubmit={comment => this.onSubmitComment({ article, comment })}
@@ -174,6 +194,13 @@ const styles = {
     flex: 1,
     backgroundColor: "#FFF",
     paddingTop: 20
+  },
+  headerBar: {
+    height: 40,
+    paddingLeft: 15,
+    borderBottomColor: "#EEE",
+    borderBottomWidth: 1,
+    justifyContent: 'center'
   },
   headerContainer: {
     flex: 1,

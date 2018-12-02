@@ -8,7 +8,11 @@ const ContainerScreen = createStackNavigator(
         Comment: CommentListScreen
     },
     {
-        initialRouteName: 'Article'
+        initialRouteName: 'Article',
+        headerMode: 'none',
+        navigationOptions: {
+            headerVisible: false,
+        }
     }
 );
 
